@@ -1,0 +1,16 @@
+[
+  {
+    "file": "tests/vector.c",
+    "arguments": [
+      "/usr/bin/gcc",
+      "-I./include",
+      "-std=c23",
+      "-c",
+      "-o",
+      "vector.o",
+      "tests/vector.c"
+    ],
+    "directory": "/home/sergio/libc",
+    "output": "vector.o"
+  }
+]
