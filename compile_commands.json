@@ -2,15 +2,76 @@
   {
     "file": "tests/vector.c",
     "arguments": [
-      "/usr/bin/gcc",
+      "gcc",
       "-I./include",
+      "-I./",
+      "-g",
       "-std=c23",
-      "-c",
       "-o",
-      "vector.o",
+      "tests/vector",
       "tests/vector.c"
     ],
-    "directory": "/home/sergio/libc",
-    "output": "vector.o"
+    "directory": "/home/sergio/libgdr",
+    "output": "tests/vector"
+  },
+  {
+    "file": "tests/pool.c",
+    "arguments": [
+      "gcc",
+      "-I./include",
+      "-I./",
+      "-g",
+      "-std=c23",
+      "-o",
+      "tests/pool",
+      "tests/pool.c"
+    ],
+    "directory": "/home/sergio/libgdr",
+    "output": "tests/pool"
+  },
+  {
+    "file": "tests/list.c",
+    "arguments": [
+      "gcc",
+      "-I./include",
+      "-I./",
+      "-g",
+      "-std=c23",
+      "-o",
+      "tests/list",
+      "tests/list.c"
+    ],
+    "directory": "/home/sergio/libgdr",
+    "output": "tests/list"
+  },
+  {
+    "file": "arena/arena.c",
+    "arguments": [
+      "gcc",
+      "-c",
+      "-I./include",
+      "-g",
+      "-std=c23",
+      "-o",
+      "arena/arena.o",
+      "arena/arena.c"
+    ],
+    "directory": "/home/sergio/libgdr",
+    "output": "arena/arena.o"
+  },
+  {
+    "file": "pool/pool.c",
+    "arguments": [
+      "gcc",
+      "-c",
+      "-I./include",
+      "-g",
+      "-std=c23",
+      "-o",
+      "pool/pool.o",
+      "pool/pool.c"
+    ],
+    "directory": "/home/sergio/libgdr",
+    "output": "pool/pool.o"
   }
 ]
