@@ -85,12 +85,32 @@ static inline void vec_test_realloc() {
 	printf("vec_test_realloc passed\n");
 }
 
+static inline void vec_test_pointer_type() {
+	typedef char * charptr;
+	Vec(charptr, ptr_vec);
+	vec_init(ptr_vec);
+	vec_put(ptr_vec, "hola");
+	char *testptr = vec_get(ptr_vec, 0);
+	assert(!strcmp(testptr, "hola"));
+
+	typedef char ** charptrptr;
+	Vec(charptrptr, ptrptr_vec);
+	vec_init(ptrptr_vec);
+	char *hola = "hola";
+	vec_put(ptrptr_vec, &hola);
+	char **testptrptr = vec_get(ptrptr_vec, 0);
+	assert(!strcmp(*testptrptr, "hola"));
+
+	printf("vec_test_pointer_type passed\n");
+}
+
 int main() {
 	vec_test_simple_put_get();
 	vec_test_arguments_and_return(); // test that Vec(type) can be used as function arguments
 	vec_test_realloc();
 	vec_test_arbitrary_struct();
 	vec_test_inside_struct();
+	vec_test_pointer_type();
 
 	return 0;
 }

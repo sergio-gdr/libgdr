@@ -8,12 +8,12 @@ INCLUDES := $(MAKEFILE_DIR)include
 check: run_tests
 
 run_tests: $(TESTEXE)
-	for test in $(TESTEXE); do \
+	@for test in $(TESTEXE); do \
 		./"$$test"; \
 	done
 
 %: $(MAKEFILE_DIR)/tests/%.c
-	gcc -I$(INCLUDES) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $@ $<
+	@gcc -I$(INCLUDES) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 clean:
 	@rm -rf $(TESTEXE)
