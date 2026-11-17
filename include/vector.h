@@ -25,7 +25,7 @@
 	do { \
 		if ((vec).size == (vec).capacity-1) { \
 			/* TODO: check overflow */ \
-			typeof(*(vec).arr) *array_re = realloc((vec).arr, (vec).capacity*2); \
+			typeof(*(vec).arr) *array_re = realloc((vec).arr, (vec).capacity*2*sizeof(*(vec).arr)); \
 			if (!array_re) { \
 				perror("realloc():"); \
 				exit(-1); \
