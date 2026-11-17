@@ -14,12 +14,15 @@
 		type *arr; \
 	} __VA_OPT__(__VA_ARGS__)
 
-#define vec_init(vec) \
+#define vec_new(vec) \
 	do { \
 		(vec).size = 0; \
 		(vec).capacity = VEC_INIT_CAP; \
 		(vec).arr = calloc(1, sizeof(*((vec).arr)) * VEC_INIT_CAP); \
 	} while (0);
+
+#define vec_free(vec) \
+	free((vec).arr);
 
 #define vec_put(vec, value) \
 	do { \

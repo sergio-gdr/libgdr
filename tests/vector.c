@@ -7,12 +7,13 @@ static inline void vec_test_inside_struct() {
 		Vec(int, test);
 	} inside_t;
 	inside_t inside;
-	vec_init(inside.test);
+	vec_new(inside.test);
 
 	vec_put(inside.test, 1);
 	int get = vec_get(inside.test, 0);
 
 	assert(get == 1);
+	vec_free(inside.test);
 
 	printf("vec_test_inside_struct passed\n");
 }
@@ -24,11 +25,12 @@ static inline void vec_test_arbitrary_struct() {
 	arb_t arb = { .a = 1, .b = 2, .c = 3 };
 
 	Vec(arb_t, arb_str_vec);
-	vec_init(arb_str_vec);
+	vec_new(arb_str_vec);
 	vec_put(arb_str_vec, arb);
 	arb_t get_arb = vec_get(arb_str_vec, 0);
 
 	assert(get_arb.a == arb.a && get_arb.b == arb.b && get_arb.c == arb.c);
+	vec_free(arb_str_vec);
 
 	printf("vec_test_arbitrary_struct passed\n");
 }
@@ -40,17 +42,19 @@ static Vec(int) test_args(Vec(int, arg)) {
 
 static inline void vec_test_arguments_and_return() {
 	Vec(int, test);
-	vec_init(test);
+	vec_new(test);
 	vec_put(test, 1);
 	Vec(int, ret) = test_args(test);
 	assert(vec_get(ret, 0) == 1);
+	vec_free(test);
+
 	printf("vec_test_arguments_and_return passed\n");
 }
 
 static inline void vec_test_simple_put_get() {
 	typedef char * charptr;
 	Vec(charptr, test);
-	vec_init(test);
+	vec_new(test);
 
 	vec_put(test, "Hello");
 	vec_put(test, ", ");
@@ -66,12 +70,15 @@ static inline void vec_test_simple_put_get() {
 	strcat(final_str, world);
 	strcat(final_str, exclamation);
 	assert(!strcmp(final_str, "Hello, World!"));
+	free(final_str);
+	vec_free(test);
+
 	printf("vec_test_simple_put_get passed\n");
 }
 
 static inline void vec_test_realloc() {
 	Vec(int, test);
-	vec_init(test);
+	vec_new(test);
 	size_t cap = vec_get_cap(test);
 
 	for (size_t i = 0; i < cap; i++) {
@@ -88,18 +95,20 @@ static inline void vec_test_realloc() {
 static inline void vec_test_pointer_type() {
 	typedef char * charptr;
 	Vec(charptr, ptr_vec);
-	vec_init(ptr_vec);
+	vec_new(ptr_vec);
 	vec_put(ptr_vec, "hola");
 	char *testptr = vec_get(ptr_vec, 0);
 	assert(!strcmp(testptr, "hola"));
+	vec_free(ptr_vec);
 
 	typedef char ** charptrptr;
 	Vec(charptrptr, ptrptr_vec);
-	vec_init(ptrptr_vec);
+	vec_new(ptrptr_vec);
 	char *hola = "hola";
 	vec_put(ptrptr_vec, &hola);
 	char **testptrptr = vec_get(ptrptr_vec, 0);
 	assert(!strcmp(*testptrptr, "hola"));
+	vec_free(ptrptr_vec);
 
 	printf("vec_test_pointer_type passed\n");
 }
