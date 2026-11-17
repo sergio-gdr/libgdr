@@ -8,6 +8,7 @@
 
 typedef struct node {
 	struct node *next;
+	struct node *prev;
 	uint8_t elem[];
 } node_t;
 
@@ -26,19 +27,39 @@ typedef struct node {
 		(list).size = 0; \
 	} while (0);
 
-#define list_insert(list, value) \
-	do { \
-		typeof((list).elem_type) elem = value; \
-		node_t *node = calloc(1, sizeof(*node)+sizeof(elem)); \
-		memcpy(node->elem, &elem, sizeof(elem)); \
+#define list_insert_new(list, element) \
+	({ \
+	 typeof(element) value = element; \
+	 node_t *node = calloc(1, sizeof(*node)+sizeof(value)); \
+	 memcpy(node->elem, &value, sizeof(value)); \
+	 if (!(list).head) { \
+		(list).head = (list).tail = node; \
+	 } \
+	 else { \
+		node->prev = (list).tail; \
+		node->prev->next = node; \
 		(list).tail = node; \
-		(list).tail->next = node; \
-	} while (0);
+	 } \
+	 (list).size++; \
+	 node; \
+	})
 
-#define list_remove(vec, node) \
+#define list_remove_node_free(list, node) \
+	if ((list).head == node) { \
+		(list).head = (list).head->next; \
+	} \
+	else if ((list).tail == node) { \
+		(list).tail = (list).tail->prev; \
+	} \
+	else { \
+		node->prev->next = node->next; \
+		node->next->prev = node->prev; \
+	} \
+	free(node);
+
 
 #define LIST_FOR_EACH(hold, list) \
-		node_t *head = (list).head; \
-		while (head && head->next && (hold = (typeof((list).elem_type))head->elem))
+		node_t *_iter = (list).head; \
+		while (_iter && _iter->next && (hold = *_iter->elem) && (_iter = _iter->next))
 
 #endif
