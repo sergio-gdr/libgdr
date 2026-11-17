@@ -1,3 +1,7 @@
+CC := gcc
+COMPILE_COMMAND := bear -a
+SANITIZERS := -fsanitize=address -fsanitize=undefined
+
 # support out-of-source build
 MAKEFILE_DIR := $(dir $(MAKEFILE_LIST))
 
@@ -9,11 +13,11 @@ INCLUDES := $(MAKEFILE_DIR)include
 
 all: libgdr.so
 
-libgdr.so: $(OBJS)
-	bear -a -- gcc -fPIC -shared -I$(INCLUDES) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $(@) $(OBJS)
+libgdr.so: $(OBJS) $(patsubst %.o,%.h,$(OBJS))
+	$(COMPILE_COMMAND) -- $(CC) $(SANITIZERS) -fPIC -shared -I$(INCLUDES) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $(@) $(OBJS)
 
 %.o: %.c
-	bear -a -- gcc -c -I$(INCLUDES) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $(@) $<
+	$(COMPILE_COMMAND) -- $(CC) $(SANITIZERS) -c -I$(INCLUDES) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $(@) $<
 
 check: all run_tests
 
@@ -24,7 +28,7 @@ run_tests: $(TESTEXE)
 	@rm -rf $(TESTEXE)
 
 $(TESTSRCDIR)/%: $(TESTSRCDIR)/%.c
-	bear -a -- gcc -I$(INCLUDES) -I$(MAKEFILE_DIR) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $@ $< -L$(MAKEFILE_DIR) -lgdr
+	$(COMPILE_COMMAND) -- $(CC) $(SANITIZERS) -I$(INCLUDES) -I$(MAKEFILE_DIR) -g -std=c23 $(CFLAGS) $(CPPFLAGS) -o $@ $< -L$(MAKEFILE_DIR) -lgdr
 
 clean:
 	@rm -rf $(TESTEXE) libgdr.so $(OBJS)
