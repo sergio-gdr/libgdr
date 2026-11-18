@@ -11,22 +11,13 @@
 	printf("address %p, alignment %lu\n", address, alignment);
 
 static inline void test_pool_alignment_max_align_t() {
-	// test max_align_t
-	max_align_t *max;
-	pool_t *max_pool = pool_create(typeof(*max));
-	max = pool_allocate(max_pool, 1);
-
-	print_alignment(max, alignof(typeof(*max)));
-	assert(is_aligned(max, alignof(typeof(*max))));
-	pool_destroy(max_pool);
-
 	printf("test_pool_alignment_max_align_t passed\n");
 }
 
 static inline void test_pool_alignment_basic_types() {
 	// test alignof(char)
 	char *ch;
-	pool_t *ch_pool = pool_create(typeof(*ch));
+	pool_t *ch_pool = pool_create(sizeof(*ch), alignof(typeof(*ch)));
 	ch = pool_allocate(ch_pool, 1);
 
 	print_alignment(ch, alignof(typeof(*ch)));
@@ -35,7 +26,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	// test alignof(short)
 	short *sh;
-	pool_t *sh_pool = pool_create(typeof(*sh));
+	pool_t *sh_pool = pool_create(sizeof(*sh), alignof(typeof(*sh)));
 	sh = pool_allocate(sh_pool, 1);
 
 	print_alignment(sh, alignof(typeof(*sh)));
@@ -44,7 +35,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	// test alignof(int)
 	int *in;
-	pool_t *in_pool = pool_create(typeof(*in));
+	pool_t *in_pool = pool_create(sizeof(*in), alignof(typeof(*in)));
 	in = pool_allocate(in_pool, 1);
 
 	print_alignment(in, alignof(typeof(*in)));
@@ -53,7 +44,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	// test alignof(long)
 	long *lo;
-	pool_t *lo_pool = pool_create(typeof(*lo));
+	pool_t *lo_pool = pool_create(sizeof(*lo), alignof(typeof(*lo)));
 	lo = pool_allocate(lo_pool, 1);
 
 	print_alignment(lo, alignof(typeof(*lo)));
@@ -62,18 +53,28 @@ static inline void test_pool_alignment_basic_types() {
 
 	// test alignof(long long)
 	long long *lolo;
-	pool_t *lolo_pool = pool_create(typeof(*lolo));
+	pool_t *lolo_pool = pool_create(sizeof(*lolo), alignof(typeof(*lolo)));
 	lolo = pool_allocate(lolo_pool, 1);
 
 	print_alignment(lolo, alignof(typeof(*lolo)));
 	assert(is_aligned(lolo, alignof(typeof(*lolo))));
 	pool_destroy(lolo_pool);
 
+	// test max_align_t (sizeof(max_align_t) doesn't make much sense, so just pass alignof() as first
+	// argument
+	max_align_t *max;
+	pool_t *max_pool = pool_create(alignof(typeof(*lolo)), alignof(typeof(*lolo)));
+	max = pool_allocate(max_pool, 1);
+
+	print_alignment(max, alignof(typeof(*max)));
+	assert(is_aligned(max, alignof(typeof(*max))));
+	pool_destroy(max_pool);
+
 	printf("test_pool_alignment_basic_types passed\n");
 }
 
 static inline void test_pool_create() {
-	pool_t *pool = pool_create(int);
+	pool_t *pool = pool_create(sizeof(int), alignof(int));
 	assert(pool);
 	pool_destroy(pool);
 

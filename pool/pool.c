@@ -15,8 +15,12 @@ struct pool {
 	__attribute__((__aligned__(alignof(max_align_t)))) uint8_t mem[];
 };
 
-pool_t *_pool_create(size_t size_elem, size_t align) {
-	pool_t *pool = calloc(1, size_elem*INIT_POOL_SIZE + sizeof(*pool));
+pool_t *pool_create(size_t size_elem, size_t align) {
+	if (size_elem > align) {
+		printf("error: alignment %lu must be multiple of the element size %lu\n", align, size_elem);
+		return NULL;
+	}
+	pool_t *pool = calloc(1, align*INIT_POOL_SIZE + sizeof(*pool));
 	pool->cap = INIT_POOL_SIZE;
 	pool->size = 0;
 	pool->size_elem = size_elem;
@@ -35,7 +39,7 @@ void *pool_allocate(pool_t *pool, size_t size) {
 			perror("realloc():");
 			return NULL;
 		}
-		pool->chunks[pool->num_chunks] = aligned_alloc(pool->align, (pool->size_elem*INIT_POOL_SIZE));
+		pool->chunks[pool->num_chunks] = aligned_alloc(pool->align, (pool->align*INIT_POOL_SIZE));
 		pool->num_chunks++;
 		if (pool->size < pool->cap) {
 			pool->size = pool->cap;
@@ -43,7 +47,7 @@ void *pool_allocate(pool_t *pool, size_t size) {
 		pool->cap *= 2;
 	}
 	size_t chunk_idx = pool->size/INIT_POOL_SIZE;
-	size_t mem_idx = (pool->size*pool->size_elem)%INIT_POOL_SIZE;
+	size_t mem_idx = (pool->size*pool->align)%INIT_POOL_SIZE;
 	void *ret = &pool->chunks[chunk_idx][mem_idx];
 	pool->size += size;
 
