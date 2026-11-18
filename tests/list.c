@@ -4,7 +4,6 @@
 
 static inline void test_list_insert() {
 	List(int, list);
-	list_init(list);
 	node_t *n1 = list_insert_new(list, 1);
 	node_t *n2 = list_insert_new(list, 2);
 	node_t *n3 = list_insert_new(list, 3);

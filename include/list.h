@@ -18,14 +18,7 @@ typedef struct node {
 		struct node *tail; \
 		size_t size; \
 		type elem_type; \
-	} __VA_OPT__(__VA_ARGS__)
-
-#define list_init(list) \
-	do { \
-		(list).head = NULL; \
-		(list).tail = NULL; \
-		(list).size = 0; \
-	} while (0);
+	} __VA_OPT__(__VA_ARGS__ = { .head = NULL, .tail = NULL, .size = 0 })
 
 #define list_insert_new(list, element) \
 	({ \
