@@ -28,6 +28,33 @@ static inline void test_pool_alignment_basic_types() {
 	assert(is_aligned(sh, alignof(typeof(*sh))));
 	free(sh_pool);
 
+	// test alignof(int)
+	int *in;
+	pool_t *in_pool = pool_create(typeof(*in));
+	in = pool_allocate(in_pool, 1);
+
+	print_alignment(in, alignof(typeof(*in)));
+	assert(is_aligned(in, alignof(typeof(*in))));
+	free(in_pool);
+
+	// test alignof(long)
+	long *lo;
+	pool_t *lo_pool = pool_create(typeof(*lo));
+	lo = pool_allocate(lo_pool, 1);
+
+	print_alignment(lo, alignof(typeof(*lo)));
+	assert(is_aligned(lo, alignof(typeof(*lo))));
+	free(lo_pool);
+
+	// test alignof(long long)
+	long long *lolo;
+	pool_t *lolo_pool = pool_create(typeof(*lolo));
+	lolo = pool_allocate(lolo_pool, 1);
+
+	print_alignment(lolo, alignof(typeof(*lolo)));
+	assert(is_aligned(lolo, alignof(typeof(*lolo))));
+	free(lolo_pool);
+
 	printf("test_pool_alignment_basic_types passed\n");
 }
 
