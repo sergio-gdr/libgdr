@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stddef.h>
 #include <stdio.h>
 
 #include "pool/pool.h"
@@ -9,6 +10,19 @@
 #define print_alignment(address, alignment) \
 	printf("address %p, alignment %lu\n", address, alignment);
 
+static inline void test_pool_alignment_max_align_t() {
+	// test max_align_t
+	max_align_t *max;
+	pool_t *max_pool = pool_create(typeof(*max));
+	max = pool_allocate(max_pool, 1);
+
+	print_alignment(max, alignof(typeof(*max)));
+	assert(is_aligned(max, alignof(typeof(*max))));
+	pool_destroy(max_pool);
+
+	printf("test_pool_alignment_max_align_t passed\n");
+}
+
 static inline void test_pool_alignment_basic_types() {
 	// test alignof(char)
 	char *ch;
@@ -17,7 +31,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	print_alignment(ch, alignof(typeof(*ch)));
 	assert(is_aligned(ch, alignof(typeof(*ch))));
-	free(ch_pool);
+	pool_destroy(ch_pool);
 
 	// test alignof(short)
 	short *sh;
@@ -26,7 +40,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	print_alignment(sh, alignof(typeof(*sh)));
 	assert(is_aligned(sh, alignof(typeof(*sh))));
-	free(sh_pool);
+	pool_destroy(sh_pool);
 
 	// test alignof(int)
 	int *in;
@@ -35,7 +49,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	print_alignment(in, alignof(typeof(*in)));
 	assert(is_aligned(in, alignof(typeof(*in))));
-	free(in_pool);
+	pool_destroy(in_pool);
 
 	// test alignof(long)
 	long *lo;
@@ -44,7 +58,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	print_alignment(lo, alignof(typeof(*lo)));
 	assert(is_aligned(lo, alignof(typeof(*lo))));
-	free(lo_pool);
+	pool_destroy(lo_pool);
 
 	// test alignof(long long)
 	long long *lolo;
@@ -53,7 +67,7 @@ static inline void test_pool_alignment_basic_types() {
 
 	print_alignment(lolo, alignof(typeof(*lolo)));
 	assert(is_aligned(lolo, alignof(typeof(*lolo))));
-	free(lolo_pool);
+	pool_destroy(lolo_pool);
 
 	printf("test_pool_alignment_basic_types passed\n");
 }
@@ -61,7 +75,7 @@ static inline void test_pool_alignment_basic_types() {
 static inline void test_pool_create() {
 	pool_t *pool = pool_create(int);
 	assert(pool);
-	free(pool);
+	pool_destroy(pool);
 
 	printf("test_pool_create passed\n");
 }
@@ -69,4 +83,5 @@ static inline void test_pool_create() {
 int main() {
 	test_pool_create();
 	test_pool_alignment_basic_types();
+	test_pool_alignment_max_align_t();
 }
