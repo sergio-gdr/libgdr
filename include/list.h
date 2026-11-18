@@ -51,8 +51,12 @@ typedef struct node {
 	free(node);
 
 
+static inline void list_tmp(void *list) {
+	;
+}
 #define LIST_FOR_EACH(hold, list) \
 		node_t *_iter = (list).head; \
-		while (_iter && _iter->next && (hold = *_iter->elem) && (_iter = _iter->next))
+		list_tmp(1 ? (hold) : &(list).elem_type); \
+		while (_iter && _iter->next && (hold = (typeof(hold))_iter->elem) && (_iter = _iter->next))
 
 #endif
