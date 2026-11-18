@@ -15,7 +15,7 @@ static inline void test_pool_alignment() {
 	ch = pool_allocate(ch_pool, 1);
 
 	print_alignment(ch, alignof(typeof(*ch)));
-	assert(is_aligned(*ch, alignof(typeof(*ch))));
+	assert(is_aligned(ch, alignof(typeof(*ch))));
 	free(ch_pool);
 
 	short *sh;
@@ -23,7 +23,7 @@ static inline void test_pool_alignment() {
 	sh = pool_allocate(sh_pool, 1);
 
 	print_alignment(sh, alignof(typeof(*sh)));
-	assert(is_aligned(*sh, alignof(typeof(*sh))));
+	assert(is_aligned(sh, alignof(typeof(*sh))));
 	free(sh_pool);
 
 	printf("test_pool_alignment passed\n");
