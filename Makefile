@@ -1,4 +1,6 @@
-CC := gcc
+ifeq ($(origin CC),default)
+  CC = gcc
+endif
 CFLAGS +=
 COMPILE_COMMAND := bear -a
 SANITIZERS := -fsanitize=address -fsanitize=undefined
