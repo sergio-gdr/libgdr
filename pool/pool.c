@@ -5,59 +5,42 @@
 
 #include "pool.h"
 
-struct pool {
-	size_t cap;
-	size_t size;
-	size_t size_elem;
-	size_t align;
-	size_t num_chunks;
-	uint8_t **chunks;
-	__attribute__((__aligned__(alignof(max_align_t)))) uint8_t mem[];
-};
-
-pool_t *pool_create(size_t size_elem, size_t align) {
-	if (size_elem > align) {
-		printf("error: alignment %lu must be multiple of the element size %lu\n", align, size_elem);
-		return NULL;
-	}
-	pool_t *pool = calloc(1, align*INIT_POOL_SIZE + sizeof(*pool));
-	pool->cap = INIT_POOL_SIZE;
-	pool->size = 0;
-	pool->size_elem = size_elem;
-	pool->align = align;
-	pool->chunks = calloc(1, sizeof(*pool->chunks));
-	pool->chunks[0] = pool->mem;
-	pool->num_chunks = 1;
-
-	return pool;
-}
-
 void *pool_allocate(pool_t *pool, size_t size) {
 	if (pool->size+size > pool->cap) {
-		void *tmp = realloc(pool->chunks, sizeof(*pool->chunks) * (pool->num_chunks + 1));
-		if (!tmp) {
+		void *new_mem;
+		new_mem = realloc(pool->num_chunks_lists > 1 ? pool->chunks_lists : NULL, sizeof(*pool->chunks_lists) * (pool->num_chunks_lists + 1));
+		if (!new_mem) {
 			perror("realloc():");
 			return NULL;
 		}
-		pool->chunks[pool->num_chunks] = aligned_alloc(pool->align, (pool->align*INIT_POOL_SIZE));
-		pool->num_chunks++;
+		if (pool->num_chunks_lists == 1) {
+			void *tmp = pool->chunks_lists;
+			pool->chunks_lists = new_mem;
+			pool->chunks_lists[0] = tmp;
+		}
+		pool->chunks_lists = new_mem;
+		pool->chunks_lists[pool->num_chunks_lists] = aligned_alloc(pool->align, pool->align*pool->chunk_cap);
+		pool->num_chunks_lists++;
 		if (pool->size < pool->cap) {
 			pool->size = pool->cap;
 		}
 		pool->cap *= 2;
 	}
-	size_t chunk_idx = pool->size/INIT_POOL_SIZE;
-	size_t mem_idx = (pool->size*pool->align)%INIT_POOL_SIZE;
-	void *ret = &pool->chunks[chunk_idx][mem_idx];
+	size_t mem_idx = (pool->size)%pool->chunk_cap;
+	size_t chunk_idx = pool->size/pool->chunk_cap;
 	pool->size += size;
-
-	return ret;
+	if (pool->num_chunks_lists > 1) {
+		return &pool->chunks_lists[chunk_idx][mem_idx];
+	}
+	uint8_t *mem = (uint8_t*)pool->chunks_lists;
+	return &mem[mem_idx*pool->align];
 }
 
 void pool_destroy(pool_t *pool) {
-	for (int i = 1; i < pool->num_chunks; i++) {
-		free(pool->chunks[i]);
+	for (int i = 1; i < pool->num_chunks_lists; i++) {
+		free(pool->chunks_lists[i]);
 	}
-	free(pool->chunks);
+	if (pool->num_chunks_lists > 1)
+		free(pool->chunks_lists);
 	free(pool);
 }
