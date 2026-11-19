@@ -34,7 +34,7 @@ run_tests: tests
 
 tests: all $(TESTS)
 
-$(TESTS_DIR)/%: $(TESTS_DIR)/%.c $(TESTS_DIR)/%.c $(HEADERS) $(INCLUDES)
+$(TESTS_DIR)/%: $(TESTS_DIR)/%.c $(TESTS_DIR)/%.c $(OBJS) $(HEADERS) $(INCLUDES)
 	$(COMPILE_COMMAND) -- $(CC) $(SANITIZERS) -I$(INCLUDE_DIR) -I$(MAKEFILE_DIR) -g -std=c23 $(CFLAGS) -o $@ $< -L$(MAKEFILE_DIR) -lgdr
 
 clean:
